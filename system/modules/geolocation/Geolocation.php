@@ -56,7 +56,7 @@ class Geolocation extends Controller
             $strCountryShort = $GLOBALS['TL_CONFIG']['geo_customCountryFallback'];
 
             // Check if we have a array
-            if ($arrIP != null && is_array($arrIP) && $strCountryShort != null && key_exists($strCountryShort, $arrCountries))
+            if ($arrIP != null && is_array($arrIP) && $strCountryShort != null && array_key_exists($strCountryShort, $arrCountries))
             {
                 // Search in array for current IP
                 foreach ($arrIP as $value)
@@ -213,6 +213,8 @@ class Geolocation extends Controller
         // Make a string from container
         $strCookieValue = 'GeolocationContainerV2';
         $strCookieValue .= '|';
+        $strCookieValue .= implode(",", $this->objUserGeolocation->getCountries());
+        $strCookieValue .= '|';
         $strCookieValue .= implode(",", $this->objUserGeolocation->getCountriesShort());
         $strCookieValue .= '|';
         $strCookieValue .= $this->objUserGeolocation->getIP();
@@ -282,7 +284,18 @@ class Geolocation extends Controller
                     // Get countries
                     foreach (trimsplit(',', $arrValues[1]) as $value)
                     {
-                        if (!key_exists($value, $arrCountries))
+                        if (!array_key_exists($value, $arrCountries))
+                        {
+                            continue;
+                        }
+
+                        $objUserGeolocation->setCountry($value);
+                    }
+
+                    // Get countriesShort
+                    foreach (trimsplit(',', $arrValues[2]) as $value)
+                    {
+                        if (!array_key_exists($value, $arrCountries))
                         {
                             continue;
                         }
@@ -290,13 +303,13 @@ class Geolocation extends Controller
                         $objUserGeolocation->setCountryShort($value);
                     }
 
-                    $objUserGeolocation->setIP($arrValues[2]);
-                    $objUserGeolocation->setLat($arrValues[3]);
-                    $objUserGeolocation->setLon($arrValues[4]);
-                    $objUserGeolocation->setTrackRunning($arrValues[5]);
-                    $objUserGeolocation->setTrackType($arrValues[6]);
-                    $objUserGeolocation->setTracked((boolean) $arrValues[7]);
-                    $objUserGeolocation->setFailed((boolean) $arrValues[8]);
+                    $objUserGeolocation->setIP($arrValues[3]);
+                    $objUserGeolocation->setLat($arrValues[4]);
+                    $objUserGeolocation->setLon($arrValues[5]);
+                    $objUserGeolocation->setTrackRunning($arrValues[6]);
+                    $objUserGeolocation->setTrackType($arrValues[7]);
+                    $objUserGeolocation->setTracked((boolean) $arrValues[8]);
+                    $objUserGeolocation->setFailed((boolean) $arrValues[9]);
 
                     $this->objUserGeolocation = $objUserGeolocation;
                     return true;
@@ -375,7 +388,7 @@ class Geolocation extends Controller
     {
         $arrCountries = $this->getCountries();
 
-        if (key_exists($strShort, $arrCountries))
+        if (array_key_exists($strShort, $arrCountries))
         {
             return $arrCountries[$strShort];
         }

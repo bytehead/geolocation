@@ -284,7 +284,7 @@ class Geolocation extends Controller
                     // Get countries
                     foreach (trimsplit(',', $arrValues[1]) as $value)
                     {
-                        if (!array_key_exists($value, $arrCountries))
+                        if ($value !== $arrCountries[$arrValues[2]])
                         {
                             continue;
                         }
